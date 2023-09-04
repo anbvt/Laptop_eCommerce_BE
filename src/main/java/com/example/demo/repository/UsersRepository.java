@@ -1,5 +1,6 @@
 package com.example.demo.repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -7,7 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import com.example.demo.entity.Users;
-import java.time.LocalDateTime;
 
 public interface UsersRepository extends JpaRepository<Users, Integer> {
 	Optional<Users> findByEmailAndPassword(String email, String password);
@@ -35,4 +35,6 @@ public interface UsersRepository extends JpaRepository<Users, Integer> {
 	List<Users> findByActive(boolean active);
 
 	List<Users> findByActiveAndCreatedAtBefore(boolean active, LocalDateTime createAt);
+
+	Optional<Users> findByToken(String token);
 }

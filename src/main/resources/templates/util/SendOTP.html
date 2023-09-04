@@ -1,11 +1,24 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Getting Started: Serving Web Content</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+
 <body
     style="width: 500px; margin: auto auto;font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: gray;">
     <div style="text-align: justify;">
         <div style="background-color: black;padding: 5px 15px;color: white;">
             <p>Xin chào <b>[[${name}]]</b>,</p>
-            <b style="color: white">Mã xác minh của bạn là: [[${OTP}]]</b>
+            <p style="color: white">
+                Để xác minh vui lòng bấm chọn:
+                <a style="font-weight: bold;" th:href=@{|${url}/api/auth/active?userToken=${token}|}>Tại đây</a>
+            </p>
             <p>If you have any questions, contact us at <b style="color: white;">zuhot@zuhot.com</b>.</p>
             <p>Chúc bạn một ngày tốt lành !</p>
         </div>
     </div>
 </body>
+
+</html>

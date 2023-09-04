@@ -29,7 +29,7 @@ import com.example.demo.service.ProductService;
 @RequestMapping("/api")
 public class ProductController {
 	@Autowired
-	ProductService productService;
+	private ProductService productService;
 
 	@GetMapping("/products")
 	public ResponseEntity<Page<Product>> getAll(

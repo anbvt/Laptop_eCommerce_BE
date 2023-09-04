@@ -56,6 +56,10 @@ public class Users {
 	@JsonIgnore
 	private List<Orders> orders;
 
+	@CreationTimestamp
+	@Column
+	private LocalDateTime createdAt;
+
 	public Users(String password, String fullname, String email, String phone, String token) {
 		this.password = password;
 		this.fullname = fullname;
@@ -75,8 +79,4 @@ public class Users {
 		this.active = active;
 		this.isAdmin = false;
 	}
-
-	@CreationTimestamp
-	@Column
-	private LocalDateTime createdAt;
 }

@@ -21,8 +21,8 @@ public class HandleTokenEvent {
     @EventListener
     public void resetToken(MyEmail email)
             throws InterruptedException, InvalidRequestParameterException {
-        Thread.sleep(Constants.TIMETOKEN_ACTIVE);
         Optional<Users> user = usersService.findByEmail(email.getEmail());
+        Thread.sleep(Constants.TIMETOKEN_ACTIVE);
         if (user.isPresent()) {
             user.get().setToken(null);
             usersService.update(user.get());

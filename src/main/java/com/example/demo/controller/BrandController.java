@@ -21,7 +21,7 @@ import com.example.demo.service.BrandService;
 @RequestMapping("/api/brand")
 public class BrandController {
 	@Autowired
-	BrandService brandService;
+	private BrandService brandService;
 
 	@GetMapping("/{id}")
 	public ResponseEntity<?> findById(@PathVariable("id") Integer id) throws InvalidRequestParameterException {

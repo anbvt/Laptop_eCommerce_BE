@@ -5,13 +5,12 @@ import lombok.Getter;
 
 @AllArgsConstructor
 public enum RequestParameterEnum {
-	NOTHING("nothing"),
-	INVALID_TYPE("invalid type"),
-	WRONG("wrong"),
-	EXISTS("is exists"),
-	NOT_EXISTS("not exists"),
-	NOT_FOUND("not found");
-
+	NOTHING("RP_01"),
+	INVALID_TYPE("RP_02"),
+	WRONG("RP_03"),
+	EXISTS("RP_04"),
+	NOT_EXISTS("RP_05"),
+	NOT_FOUND("RP_06");
 	@Getter
 	private String name;
 }

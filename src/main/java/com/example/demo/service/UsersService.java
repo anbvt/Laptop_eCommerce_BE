@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.common.enums.RequestParameterEnum;
+import com.example.demo.common.enums.RequestStatusEnum;
 import com.example.demo.entity.Users;
 import com.example.demo.exception.InvalidRequestParameterException;
 import com.example.demo.model.MailUserInfo;
@@ -17,6 +18,9 @@ import jakarta.mail.MessagingException;
 
 @Service
 public class UsersService implements BaseService<Users, Integer> {
+
+	@Autowired
+	EmailService emailService;
 
 	@Autowired
 	private UsersRepository usersRepository;
@@ -43,30 +47,11 @@ public class UsersService implements BaseService<Users, Integer> {
 		return usersRepository.findByIsAdmin(isAdmin);
 	}
 
-	public String registrationConfirm(String email, String OTP) throws InvalidRequestParameterException {
-		Users users = usersRepository.findByEmail(email).get();
-		if (users == null) {
-			throw new InvalidRequestParameterException("Email", RequestParameterEnum.WRONG);
-		}
-		if (users.isActive()) {
-			throw new InvalidRequestParameterException("Email", RequestParameterEnum.EXISTS);
-		}
-		if (users.getToken().equals(OTP)) {
-			users.setActive(true);
-			usersRepository.save(users);
-			return "Successful registration confirmation !";
-		}
-		return "Registration confirmation failed, please try again!";
-	}
-
-	public int save(Users user) throws InvalidRequestParameterException {
+	public RequestStatusEnum save(Users user) throws InvalidRequestParameterException {
 		if (usersRepository.findByEmail(user.getEmail()).isPresent()) {
 			throw new InvalidRequestParameterException("User", RequestParameterEnum.EXISTS);
 		}
-		if (usersRepository.save(user) != null) {
-			return 1;
-		}
-		return 0;
+		return (usersRepository.save(user) != null ? RequestStatusEnum.SUCCESS : RequestStatusEnum.FAILURE);
 	}
 
 	public int deleteById(Integer id) throws InvalidRequestParameterException {
@@ -81,14 +66,11 @@ public class UsersService implements BaseService<Users, Integer> {
 		}
 	}
 
-	public int update(Users user) throws InvalidRequestParameterException {
+	public RequestStatusEnum update(Users user) throws InvalidRequestParameterException {
 		if (!usersRepository.existsById(user.getId())) {
 			throw new InvalidRequestParameterException("User", RequestParameterEnum.NOT_EXISTS);
 		}
-		if (usersRepository.save(user) != null) {
-			return 1;
-		}
-		return 0;
+		return (usersRepository.save(user) != null ? RequestStatusEnum.SUCCESS : RequestStatusEnum.FAILURE);
 	}
 
 	public List<Users> customersBuyMostInMonth() {
@@ -97,24 +79,6 @@ public class UsersService implements BaseService<Users, Integer> {
 
 	public Optional<Users> findByEmail(String email) {
 		return usersRepository.findByEmail(email);
-	}
-
-	@Autowired
-	EmailService emailService;
-
-	public String registration(Users users) throws InvalidRequestParameterException {
-		Optional<Users> us = usersRepository.findByEmail(users.getEmail());
-		if (us.isPresent()) {
-			if (us.get().getToken() != null)
-				// Exists Token
-				throw new InvalidRequestParameterException("Token", RequestParameterEnum.EXISTS);
-		}
-		try {
-			return (emailService.sendCode(
-					new MailUserInfo(users.getEmail(), "Mã xác minh tài khoản của bạn trên Zuhot Stores", users)));
-		} catch (MessagingException ex) {
-			throw new InvalidRequestParameterException("Email", RequestParameterEnum.WRONG);
-		}
 	}
 
 	public List<Users> findByActive(boolean active) {
@@ -131,5 +95,30 @@ public class UsersService implements BaseService<Users, Integer> {
 
 	public List<Users> findByActiveAndCreatedAtBefore(boolean active, LocalDateTime time) {
 		return usersRepository.findByActiveAndCreatedAtBefore(active, time);
+	}
+
+	public String registration(Users users) throws InvalidRequestParameterException {
+		Optional<Users> us = usersRepository.findByEmail(users.getEmail());
+		if (us.isPresent()) {
+			if (us.get().getToken() != null)
+				// Exists Token
+				throw new InvalidRequestParameterException("Token", RequestParameterEnum.EXISTS);
+		}
+		try {
+			return (emailService.sendCode(
+					new MailUserInfo(users.getEmail(), "Mã xác minh tài khoản của bạn trên Zuhot Cinema", users)));
+		} catch (MessagingException ex) {
+			throw new InvalidRequestParameterException("Email", RequestParameterEnum.WRONG);
+		}
+	}
+
+	public RequestStatusEnum registrationConfirm(String OTP) throws InvalidRequestParameterException {
+		Users users = usersRepository.findByToken(OTP)
+				.orElseThrow(() -> new InvalidRequestParameterException("Token", RequestParameterEnum.NOT_EXISTS));
+		if (users.getToken().equals(OTP)) {
+			users.setActive(true);
+			return (usersRepository.save(users) != null ? RequestStatusEnum.SUCCESS : RequestStatusEnum.FAILURE);
+		}
+		return RequestStatusEnum.FAILURE;
 	}
 }

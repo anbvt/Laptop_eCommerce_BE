@@ -16,7 +16,7 @@ import com.example.demo.service.ColorService;
 @RequestMapping("/api/color")
 public class ColorController {
 	@Autowired
-	ColorService colorService;
+	private ColorService colorService;
 
 	@GetMapping("/{id}")
 	public ResponseEntity<?> findById(@PathVariable("id") Integer id) throws InvalidRequestParameterException {
