@@ -1,3 +1,4 @@
 FROM openjdk:17
-LABEL maintainer="LAPTOP_ECOMMERCE"
-ENTRYPOINT [ "java","-jar","/app.jar" ]
+WORKDIR /app
+COPY --from=builder /app/target/LAPTOP_ECOMMERCE-0.0.1-SNAPSHOT.jar app.jar
+ENTRYPOINT ["java", "-jar", "/app.jar"
